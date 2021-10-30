@@ -1,8 +1,0 @@
-{
-    "compilerOptions": {
-        "target": "ESNext",
-        "watch": true,
-        "outDir": "src-js/",
-        "lib": ["dom", "es2020"]
-    }
-}
