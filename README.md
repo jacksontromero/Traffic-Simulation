@@ -7,10 +7,13 @@ This project aimed to create a traffic grid simulation that could be tweaked so 
 
 ### TS-Cars
 Runs the simulation with the cars networked and talking to each other so they can take longer routes in order to avoid congestion
+Click [here](https://rawcdn.githack.com/jacksontromero/Traffic-Simulation/b2f2628e57c273036aaa1ebd3329c0a9519ea47c/TS-Cars/tsIndex.html) to play around with this version
 
 ### TS-Lights
 Runs the simulation with the lights dynamically switching so that the most cars can pass through in the same amount of time
+Click [here](https://rawcdn.githack.com/jacksontromero/Traffic-Simulation/b2f2628e57c273036aaa1ebd3329c0a9519ea47c/TS-Lights/tsIndex.html) to play around with this version
 
 
 ### TS-Lights-Cars
 Runs the simulation with both the networked cars and the smart lights
+Click [here](https://rawcdn.githack.com/jacksontromero/Traffic-Simulation/b2f2628e57c273036aaa1ebd3329c0a9519ea47c/TS-Lights-Cars/tsIndex.html) to play around with this version
