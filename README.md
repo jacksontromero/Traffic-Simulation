@@ -7,11 +7,11 @@ Each link below can be started with the following commands
 
 * First, press the "Setup Everything" button and then press play
 * The following will then happen:
-* * Cars will be generated and begin to move to their destinations
-* * After 10 minutes in the simulation, no new cars will be spawned
-* * After all cars have reached their destination, the simulation is run again but with the cars or lights or both having their "smart" functionality enabled
-* * Average improvements are printed to the terminal, and then another grid is started with the improvements turned off now
-* * Repeat
+    * Cars will be generated and begin to move to their destinations
+    * After 10 minutes in the simulation, no new cars will be spawned
+    * After all cars have reached their destination, the simulation is run again but with the cars or lights or both having their "smart" functionality enabled
+    * Average improvements are printed to the terminal, and then another grid is started with the improvements turned off now
+    * Repeat
 
 ## The four folders run simulations with slightly different parameters:
 
