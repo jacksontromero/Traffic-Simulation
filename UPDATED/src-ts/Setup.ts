@@ -72,15 +72,20 @@ let carSpacing = .001;
  */
 function setup() 
 {
-    // createCanvas(800, 800);
+    let size = 500;
+    let canvas = createCanvas(size,size);
+    let x = (windowWidth-size)/2;
+    let y = (windowHeight-size)/2;
+    canvas.position(x,y);
+
     background(51);
 
+    //create object to control lights, cars, roads, etc.
     GridController = masterGridFactory(50);
 
     //setup everything button
-    setupEverythingButton = createButton(`Setup Everything`);
-    setupEverythingButton.className = "w3-btn";
-    setupEverythingButton.mousePressed(() => {
+    setupEverythingButton = document.getElementById("setupButton");
+    setupEverythingButton.onclick = (() => {
         GridController = masterGridFactory(50);
 
         generateLights();
@@ -95,8 +100,9 @@ function setup()
 
         paused = undefined;
         clearInterval(runInterval);
-        playPauseButton.elt.innerHTML = 'Play ⏵';
-        timeLabel.elt.innerHTML = `${Math.floor(GridController.masterTime)} seconds`;
+        playPauseButton.innerHTML = 'Play ⏵';
+        playPauseButton.disabled = false;
+        timeLabel.innerHTML = `${Math.floor(GridController.masterTime)} seconds`;
 
         setUpCars(GridController.Lights.length*4);
         startCars();
@@ -114,33 +120,33 @@ function setup()
     });
     
     //next event button
-    gridNextButton = createButton(`Next Event`);
-    gridNextButton.mousePressed(() => {
+    gridNextButton = document.getElementById("nextButton");
+    gridNextButton.onclick = (() => {
         GridController.nextEvent();
     });
 
     //play/pase button
-    playPauseButton = createButton(`Play ⏵`);
-    playPauseButton.mousePressed(() => {
+    playPauseButton = document.getElementById("playPauseButton");
+    playPauseButton.onclick = (() => {
 
         if(typeof paused == "undefined") {
             runGrid();
             paused = false;
-            playPauseButton.elt.innerHTML = `Pause ||`;
+            playPauseButton.innerHTML = `Pause ||`;
         }
 
         else if(paused == true) {
             paused = false;
-            playPauseButton.elt.innerHTML = `Pause ||`;
+            playPauseButton.innerHTML = `Pause ||`;
         }
         else {
             paused = true;
-            playPauseButton.elt.innerHTML = 'Play ⏵';
+            playPauseButton.innerHTML = 'Play ⏵';
         }
     });
 
-    timeLabel = createP(`${GridController.masterTime} seconds`);
-    timeLabel.style('display', 'inline');
+    timeLabel = document.getElementById("timeLabel");
+    // timeLabel.style('display', 'inline');
 
     /*
     createDiv();
@@ -159,25 +165,25 @@ function setup()
     */
 
     createDiv();
-    labelsButton = createButton('Show Labels');
-    labelsButton.mousePressed(() => {showLabels = !showLabels})
+    labelsButton = document.getElementById("labelsButton");
+    labelsButton.onclick = (() => {showLabels = !showLabels})
 
-    resetButton = createButton('Reset');
-    resetButton.mousePressed(() => {
+    resetButton = document.getElementById("resetButton");
+    resetButton.onclick = (() => {
         GridController.reset();
-        continuousCarsButton.elt.remove();
+        // continuousCarsButton.remove();
     });
 
-    continuousCarsButton = createButton('Continuous Car Generation: ✓');
-    continuousCarsButton.mousePressed(() => {
+    continuousCarsButton = document.getElementById("carsButton");
+    continuousCarsButton.onclick = (() => {
         if(continuousCars == true) {
             continuousCars = false;
-            continuousCarsButton.elt.innerHTML = `Continuous Car Generation: ╳`;
+            continuousCarsButton.innerHTML = `Continuous Car Generation: ╳`;
         }
         else {
             continuousCars = true;
             GridController.masterQueue.enqueue(gridEventFactory(GridController.masterTime, generateContinuousCarsCreateEventHandler(continuousCarsDelay), "first continuous car"));
-            continuousCarsButton.elt.innerHTML = 'Continuous Car Generation: ✓';
+            continuousCarsButton.innerHTML = 'Continuous Car Generation: ✓';
         }
     });
 

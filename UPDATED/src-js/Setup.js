@@ -48,26 +48,20 @@ let networkedPercent = .5;
 let carLength = .003;
 //average car spacing at a stop in miles (5.28 ft)
 let carSpacing = .001;
-
 /**
  * p5.js setup function for HTML stuff
  */
 function setup() {
-
     let size = 500;
-    let canv = createCanvas(size, size);
-    let x = (windowWidth - size) /2 ;
-    let y = (windowHeight - size) /2 ;
-    canv.position(x,y);
-
-    let buttonBar = document.getElementById("buttonBar");
-
+    let canvas = createCanvas(size, size);
+    let x = (windowWidth - size) / 2;
+    let y = (windowHeight - size) / 2;
+    canvas.position(x, y);
     background(51);
+    //create object to control lights, cars, roads, etc.
     GridController = masterGridFactory(50);
     //setup everything button
-    
     setupEverythingButton = document.getElementById("setupButton");
-
     setupEverythingButton.onclick = (() => {
         GridController = masterGridFactory(50);
         generateLights();
@@ -116,7 +110,6 @@ function setup() {
         }
     });
     timeLabel = document.getElementById("timeLabel");
-    // timeLabel = createButton(`${GridController.masterTime} seconds`);
     // timeLabel.style('display', 'inline');
     /*
     createDiv();
@@ -136,13 +129,11 @@ function setup() {
     createDiv();
     labelsButton = document.getElementById("labelsButton");
     labelsButton.onclick = (() => { showLabels = !showLabels; });
-
     resetButton = document.getElementById("resetButton");
     resetButton.onclick = (() => {
         GridController.reset();
-        // continuousCarsButton.elt.remove();
+        // continuousCarsButton.remove();
     });
-
     continuousCarsButton = document.getElementById("carsButton");
     continuousCarsButton.onclick = (() => {
         if (continuousCars == true) {
