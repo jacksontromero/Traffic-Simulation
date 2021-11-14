@@ -459,7 +459,7 @@ function generateContinuousCarsCreateEventHandler(delay: number): Function {
 function stopContinuousCarsCreateEventHandler(): Function {
     return () => {
         continuousCars = false;
-        continuousCarsButton.elt.innerHTML = `Continuous Car Generation ENDED`;
+        continuousCarsButton.innerHTML = `Continuous Car Generation ENDED`;
     }
 }
 

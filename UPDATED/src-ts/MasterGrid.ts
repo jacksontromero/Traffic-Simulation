@@ -68,7 +68,7 @@ function masterGridFactory(buffer: number): masterGrid {
                 console.log(`ALL FINISHED`);
                 console.log(JSON.stringify(GridController.gridResults));
                 paused = true;
-                playPauseButton.elt.innerHTML = 'Play ⏵';
+                playPauseButton.innerHTML = 'Play ⏵';
             }
             else {
                 //if this is the run after the baseline, run again but modified
@@ -148,7 +148,7 @@ function masterGridFactory(buffer: number): masterGrid {
                 runGrid();
 
                 paused = false;
-                playPauseButton.elt.innerHTML = `Pause ||`;
+                playPauseButton.innerHTML = `Pause ||`;
             }
         },
 
