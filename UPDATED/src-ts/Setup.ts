@@ -295,6 +295,7 @@ function draw()
     for(let i = 0; i<GridController.Cars.length; i++) {
         let car = GridController.Cars[i];
         fill(255, 0, 0);
+        
         if(car.completed) {
             fill(0,0,255);
         }
