@@ -171,7 +171,7 @@ function masterGridFactory(buffer: number): masterGrid {
 
             //update time
             this.masterTime = eventToRun.priority;
-            timeLabel.elt.innerHTML = `${Math.floor(GridController.masterTime)} seconds`;
+            timeLabel.innerHTML = `${Math.floor(GridController.masterTime)} seconds`;
 
             //run event
             //console.log(eventToRun);

@@ -339,7 +339,7 @@ function generateContinuousCarsCreateEventHandler(delay) {
 function stopContinuousCarsCreateEventHandler() {
     return () => {
         continuousCars = false;
-        continuousCarsButton.elt.innerHTML = `Continuous Car Generation ENDED`;
+        continuousCarsButton.innerHTML = `Continuous Car Generation ENDED`;
     };
 }
 //generates a ton of cars all going the same place

@@ -72,13 +72,14 @@ let carSpacing = .001;
  */
 function setup() 
 {
-    createCanvas(800, 800);
+    // createCanvas(800, 800);
     background(51);
 
     GridController = masterGridFactory(50);
 
     //setup everything button
     setupEverythingButton = createButton(`Setup Everything`);
+    setupEverythingButton.className = "w3-btn";
     setupEverythingButton.mousePressed(() => {
         GridController = masterGridFactory(50);
 

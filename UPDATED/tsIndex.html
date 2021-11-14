@@ -2,9 +2,11 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
+	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 	<title>Grid-Generator</title>
 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/p5.js"></script>
+	
 
 </head>
 
@@ -17,6 +19,19 @@
 	<script src="src-js/Road.js"></script>
 	<script src="src-js/Lane.js"></script>
 	<script src="src-js/Car.js"></script>
+
+	<div id="buttonBar" class="w3-container w3-bar-item w3-center" style="min-height:15%; display: flex;">
+		<button id="setupButton" class = "w3-button w3-border w3-border-black w3-quarter w3-hover-indigo">Setup Everything</button>
+		<button id="nextButton" class = "w3-button w3-border w3-border-black w3-quarter w3-hover-indigo">Next Event</button>
+		<button id="playPauseButton" disabled class = "w3-button w3-border w3-border-black w3-quarter w3-hover-indigo">Play ⏵</button>
+		<button id="timeLabel" class = "w3-button w3-border w3-border-black w3-quarter">0 seconds</button>
+	</div>
+
+	<div id="buttonBar" class="w3-container w3-bar-item w3-center" style="min-height:15%; display: flex;">
+		<button id="labelsButton" class = "w3-button w3-border w3-border-black w3-third w3-hover-indigo">Show Labels</button>
+		<button id="resetButton" class = "w3-button w3-border w3-border-black w3-third w3-hover-indigo">Reset</button>
+		<button id="carsButton" class = "w3-button w3-border w3-border-black w3-third w3-hover-indigo">Continuous Car Generation: ✓</button>
+	</div>
 
 </body>
 

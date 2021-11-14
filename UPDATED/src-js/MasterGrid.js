@@ -28,7 +28,7 @@ function masterGridFactory(buffer) {
                 console.log(`ALL FINISHED`);
                 console.log(JSON.stringify(GridController.gridResults));
                 paused = true;
-                playPauseButton.elt.innerHTML = 'Play ⏵';
+                playPauseButton.innerHTML = 'Play ⏵';
             }
             else {
                 //if this is the run after the baseline, run again but modified
@@ -88,7 +88,7 @@ function masterGridFactory(buffer) {
                 }*/
                 runGrid();
                 paused = false;
-                playPauseButton.elt.innerHTML = `Pause ||`;
+                playPauseButton.innerHTML = `Pause ||`;
             }
         },
         /**
@@ -109,7 +109,7 @@ function masterGridFactory(buffer) {
             this.completedQueue.push(eventToRun);
             //update time
             this.masterTime = eventToRun.priority;
-            timeLabel.elt.innerHTML = `${Math.floor(GridController.masterTime)} seconds`;
+            timeLabel.innerHTML = `${Math.floor(GridController.masterTime)} seconds`;
             //run event
             //console.log(eventToRun);
             eventToRun.value();
