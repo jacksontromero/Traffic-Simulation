@@ -98,11 +98,6 @@ function carFactory(id, light, mpg, path) {
                     this.endTime = time;
                     this.coords = this.lane.exit.coords;
                     this.lane = undefined;
-                    let resultsArr = GridController.results[this.id];
-                    if (!resultsArr) {
-                        GridController.results[this.id] = [];
-                    }
-                    GridController.results[this.id].push(this.endTime);
                     let allFinished = true;
                     for (let i = 0; i < GridController.Cars.length; i++) {
                         if (!GridController.Cars[i].completed) {
@@ -111,14 +106,9 @@ function carFactory(id, light, mpg, path) {
                         }
                     }
                     if (allFinished) {
-                        testImprovements();
-                        GridController.iterate();
-                        /*else {
-                            console.log(`ALL FINISHED`);
-                            console.log(JSON.stringify(GridController.results));
-                            paused = true;
-                            playPauseButton.elt.innerHTML = 'Play ⏵';
-                        }*/
+                        console.log(`ALL FINISHED`);
+                        paused = true;
+                        playPauseButton.innerHTML = 'Play ⏵';
                     }
                 }
             };
@@ -287,17 +277,6 @@ function testSpeeds() {
     }
     console.log(`success!`);
 }
-function testImprovements() {
-    let sum = 0;
-    let i;
-    for (i = 0; i < GridController.Cars.length; i++) {
-        let tempCar = GridController.Cars[i];
-        let difference = GridController.results[tempCar.id][GridController.currentIteration - 1] - GridController.results[tempCar.id][0];
-        sum += difference;
-    }
-    console.log(`Average difference between iteration ${GridController.gridIteration} and the original run: ${sum / i}`);
-    return sum / i;
-}
 function generateContinuousCarsCreateEventHandler(delay) {
     return () => {
         if (continuousCars) {
@@ -406,6 +385,9 @@ function startTestCars() {
         GridController.masterQueue.enqueue(gridEventFactory(GridController.masterTime + stagger * i, testCar.start(), "start car"));
     }
 }
+/**
+ * Tests to make sure car doesn't arrive after another but get reported as arriving before
+ */
 function testArrivals() {
     let error = false;
     for (let i = 0; i < GridController.Cars.length - 1; i++) {

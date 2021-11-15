@@ -153,12 +153,6 @@ function carFactory(id: number, light: Light, mpg: number, path: Light[]): Car {
 
                     this.lane = undefined;
 
-                    let resultsArr = GridController.results[this.id];
-                    if(!resultsArr) {
-                        GridController.results[this.id] = [];
-                    }
-                    GridController.results[this.id].push(this.endTime);
-
                     let allFinished = true;
                     for(let i = 0; i<GridController.Cars.length; i++) {
                         if(!GridController.Cars[i].completed) {
@@ -168,15 +162,11 @@ function carFactory(id: number, light: Light, mpg: number, path: Light[]): Car {
                     }
 
                     if(allFinished) {
-                        testImprovements();
-                        GridController.iterate();
-
-                        /*else {
-                            console.log(`ALL FINISHED`);
-                            console.log(JSON.stringify(GridController.results));
-                            paused = true;
-                            playPauseButton.elt.innerHTML = 'Play ⏵';
-                        }*/
+                    
+                        console.log(`ALL FINISHED`);
+                        paused = true;
+                        playPauseButton.innerHTML = 'Play ⏵';
+                        
                     }
                 }
             }
@@ -188,9 +178,6 @@ function carFactory(id: number, light: Light, mpg: number, path: Light[]): Car {
         moveToLightQueueCreateEventHandler(): Function {
             return () => {
                 let time = GridController.masterTime;
-
-                
-
 
                 //sets the current light as the light we're entering the queue of and add to total distance
                 let nextLight = this.lane.exit;
@@ -392,20 +379,6 @@ function testSpeeds() {
     console.log(`success!`);
 }
 
-function testImprovements(): number {
-    let sum = 0;
-    let i;
-
-    for(i = 0; i<GridController.Cars.length; i++) {
-        let tempCar = GridController.Cars[i];
-        let difference = GridController.results[tempCar.id][GridController.currentIteration-1] - GridController.results[tempCar.id][0];
-        sum+=difference;
-
-    }
-
-    console.log(`Average difference between iteration ${GridController.gridIteration} and the original run: ${sum/i}`);
-    return sum/i;
-}
 
 function generateContinuousCarsCreateEventHandler(delay: number): Function {
 
@@ -549,6 +522,9 @@ function startTestCars() {
     }
 }
 
+/**
+ * Tests to make sure car doesn't arrive after another but get reported as arriving before
+ */
 function testArrivals() {
     let error  = false;
     for(let i = 0; i<GridController.Cars.length-1; i++) {

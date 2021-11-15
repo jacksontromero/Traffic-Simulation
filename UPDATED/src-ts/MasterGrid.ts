@@ -14,13 +14,6 @@ interface masterGrid {
     completedQueue: gridEvent[];
     masterTime: number;
 
-    results: number[][];
-    gridResults: number[];
-    iterations: number;
-    currentIteration: number;
-    gridIteration: number;
-    iterate(): void;
-
     updateSize(gridSize: number, width: number):void;
     nextEvent():gridEvent;
     reset(): void;
@@ -37,120 +30,14 @@ function masterGridFactory(buffer: number): masterGrid {
         Lights: [],
         Roads: [],
         Cars: [],
-        results: [[]],
-        gridResults: [],
  
         buffer: buffer,
         gridSize: 0,
         stepSize: 0,
-        iterations: 50,
-        //STARTS COUNTING FROM 1
-        currentIteration: 1,
-        gridIteration: 1,
-
-
 
         masterQueue: PriorityQueueFactory(),
         completedQueue: [],
         masterTime: 0,
-
-        iterate():void {
-
-
-            this.currentIteration++;
-
-            if(this.gridIteration == this.iterations && this.currentIteration == 3) {
-                
-                this.currentIteration--;
-                this.gridResults[this.gridIteration-1] = testImprovements();
-                this.currentIteration++;
-
-                console.log(`ALL FINISHED`);
-                console.log(JSON.stringify(GridController.gridResults));
-                paused = true;
-                playPauseButton.innerHTML = 'Play ⏵';
-            }
-            else {
-                //if this is the run after the baseline, run again but modified
-                if(this.currentIteration == 2) {
-                    this.reset();
-                    console.log(`run adjusted grid ${this.gridIteration}`);
-                    for(let i = 0; i<GridController.Cars.length; i++) {
-                        GridController.Cars[i].reRoute = true;
-                    }
-
-                    for(let i = 0; i<GridController.Lights.length; i++) {
-                        GridController.Lights[i].smartLogic = true;
-                    }
-                }
-
-                //otherwise if we have baseline and full logic run, test new grid setup
-                else if(this.currentIteration == 3) {
-                    clearInterval(runInterval);
-
-                    this.currentIteration--;
-                    this.gridResults[this.gridIteration-1] = testImprovements();
-                    this.currentIteration++;
-
-                    this.gridIteration++;
-                    console.log(`generateNewGrid ${this.gridIteration}/${this.iterations}`);
-
-
-                    //hard reset
-                    this.Lights = [];
-                    this.Roads = [];
-                    this.Cars = [];
-
-                    this.masterQueue = PriorityQueueFactory();
-                    this.completedQueue = [];
-                    this.masterTime = 0;
-
-                    this.results = [[]];
-                    this.currentIteration = 1;
-
-                    generateLights();
-                    generateRoads();
-                    removeLights();
-                    removeRoads();
-
-                    generateLanes();
-
-                    continuousCarsDelay = 10/(GridController.Lights.length/50);
-
-                    paused = undefined;
-
-                    setUpCars(GridController.Lights.length*4);
-                    startCars();
-
-                    GridController.masterQueue.enqueue(gridEventFactory(GridController.masterTime, generateContinuousCarsCreateEventHandler(continuousCarsDelay), "first continuous car"));
-                    GridController.masterQueue.enqueue(gridEventFactory(GridController.masterTime+continuousCarsTime, stopContinuousCarsCreateEventHandler(), "stops continuous car generation"));
-                }
-
-
-                //fractional network rerouting
-                /*this.Cars = shuffle(this.Cars);
-                let quota = Math.floor(networkedPercent*this.Cars.length);
-                let reRouted = 0;
-                while(reRouted < quota) {
-                    this.Cars[reRouted].reRoute = true;
-                    reRouted++;
-                }*/
-
-                /*//fractional smartLights (already shuffled from removeLights)
-                let lightQuota = Math.floor(smartLightPercent*this.Lights.length);
-                let nowSmart = 0;
-                while(nowSmart < lightQuota) {
-                    this.Lights[nowSmart].smartLogic = true;
-                    nowSmart++;
-                }*/
-
-
-                runGrid();
-
-                paused = false;
-                playPauseButton.innerHTML = `Pause ||`;
-            }
-        },
 
         /**
          * Updates the size of the grid (used if slider value changes)

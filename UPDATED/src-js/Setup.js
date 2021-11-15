@@ -126,7 +126,7 @@ function setup() {
         generateRoads();
     });
     */
-    createDiv();
+    // createDiv();
     labelsButton = document.getElementById("labelsButton");
     labelsButton.onclick = (() => { showLabels = !showLabels; });
     resetButton = document.getElementById("resetButton");

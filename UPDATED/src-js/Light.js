@@ -67,6 +67,7 @@ function lightFactory(id) {
                     this.incomingLanes.push(lastVal);
                     this.activeLane = this.incomingLanes[0];
                     //if the new active lane is the same as the old opposite lane, just shift one more time
+                    //this case is when there are three lanes coming in to one light
                     if (oldOppositeLane) {
                         if (oldOppositeLane == this.activeLane) {
                             lastVal = this.incomingLanes.shift();
@@ -115,20 +116,10 @@ function lightFactory(id) {
                 let time = GridController.masterTime;
                 let waitingCars = 0;
                 let oppositeLane = this.activeLane.getOpposite();
-                if (oppositeLane) {
-                    for (let i = 0; i < this.incomingLanes.length; i++) {
-                        let tempLane = this.incomingLanes[i];
-                        if (tempLane != this.activeLane && tempLane != oppositeLane) {
-                            waitingCars += tempLane.exitQueue.length;
-                        }
-                    }
-                }
-                else {
-                    for (let i = 0; i < this.incomingLanes.length; i++) {
-                        let tempLane = this.incomingLanes[i];
-                        if (tempLane != this.activeLane && tempLane != oppositeLane) {
-                            waitingCars += tempLane.exitQueue.length;
-                        }
+                for (let i = 0; i < this.incomingLanes.length; i++) {
+                    let tempLane = this.incomingLanes[i];
+                    if (tempLane != this.activeLane && tempLane != oppositeLane) {
+                        waitingCars += tempLane.exitQueue.length;
                     }
                 }
                 if (verbose) {
@@ -147,6 +138,7 @@ function lightFactory(id) {
                 }
                 //yes opp lane
                 else if (oppositeLane) {
+                    //if the light is smart, time has not elapsed, no cars actively waiting on active lanes, and cars waiting on inactive lanes, cycle
                     if (this.smartLogic && time < this.startCycleTime + this.cycleTime - this.travelTime && this.activeLane.exitQueue.length == 0 && oppositeLane.exitQueue.length == 0 && waitingCars != 0 && this.currentlySkipping == false) {
                         //CYCLE NOW
                         //remove current light cycle event

@@ -164,7 +164,7 @@ function setup()
     });
     */
 
-    createDiv();
+    // createDiv();
     labelsButton = document.getElementById("labelsButton");
     labelsButton.onclick = (() => {showLabels = !showLabels})
 
