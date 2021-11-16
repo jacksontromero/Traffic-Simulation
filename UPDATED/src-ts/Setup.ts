@@ -4,35 +4,20 @@ let setupEverythingButton;
 let gridNextButton;
 let playPauseButton;
 let paused;
-
 let timeLabel;
-
-/*
-let roadsButton;
-let lightsButton;
-let bothButton;
-*/
-
 let labelsButton;
-let showLabels = false;
-
 let resetButton;
-
-/*
-let removeRoadsButton;
-let removeLightsButton;
-let removeBothButton;
-*/
-
 let gridSlider;
 let sliderLabel;
-
 let roadPercentSlider;
 let roadPercentLabel;
-
 let lightPercentSlider;
 let lightPercentLabel;
 
+/**show debugging lables*/
+let showLabels = false;
+
+/**global variable for the entire grid*/
 let GridController: masterGrid;
 
 //continuous car generation stuff
@@ -41,15 +26,17 @@ let continuousCarsButton;
 let continuousCarsTime = 600;
 let continuousCarsDelay;
 
-//GLOBAL VARS FOR CONTROL ---
+/**full console output */
 let verbose = false;
 
-//miles/pixel
+/**miles/pixel*/
 let gridScale = 0.00094696969; //(800px ~ .75 miles) 400ft long roads at 10*10 grid
 
 //light travel time acts as a proxy for 'yellow' lights but not really
+/**seconds it takes to go through a light*/
 let lightTravelTime = 5;
 
+/**delay between cars moving in a chain*/
 let reactionTime = 3;
 
 //light cycle stuff
@@ -61,17 +48,24 @@ let smartLightPercent = .5;
 let congestionWeight = 14;
 let networkedPercent = .5;
 
-//average car length in miles (15.84 ft)
+//use to calculate how far cars move
+/**average car length in miles (15.84 ft)*/
 let carLength = .003;
-
-//average car spacing at a stop in miles (5.28 ft)
+/**average car spacing at a stop in miles (5.28 ft)*/
 let carSpacing = .001;
+
+
+//DRAWING PARAMETERS
+
+/**how far lanes drawn from each other */
+let offset = 3;
 
 /**
  * p5.js setup function for HTML stuff
  */
 function setup() 
 {
+    //creates canvas
     let size = 500;
     let canvas = createCanvas(size,size);
     let x = (windowWidth-size)/2;
@@ -81,42 +75,43 @@ function setup()
     background(51);
 
     //create object to control lights, cars, roads, etc.
-    GridController = masterGridFactory(50);
+    GridController = masterGridFactory(50, reactionTime);
+
+    //set timeLabel
+    timeLabel = document.getElementById("timeLabel");
 
     //setup everything button
     setupEverythingButton = document.getElementById("setupButton");
     setupEverythingButton.onclick = (() => {
-        GridController = masterGridFactory(50);
+        
+        //create master grid
+        GridController = masterGridFactory(50, reactionTime);
 
+        //generate grid objects
         generateLights();
         // generateTestLights();
         generateRoads();
         removeLights();
         removeRoads();
-
         generateLanes();
 
+        //calculate how often continuous cars are added to the grid
         continuousCarsDelay = 10/(GridController.Lights.length/50);
 
+        //start buttons
         paused = undefined;
         clearInterval(runInterval);
         playPauseButton.innerHTML = 'Play ⏵';
         playPauseButton.disabled = false;
         timeLabel.innerHTML = `${Math.floor(GridController.masterTime)} seconds`;
 
+        //generate 4 cars per light and start them all
         setUpCars(GridController.Lights.length*4);
         startCars();
 
+        //add events for starting continuous car generation and stopping continuous car generation
         GridController.masterQueue.enqueue(gridEventFactory(GridController.masterTime, generateContinuousCarsCreateEventHandler(continuousCarsDelay), "first continuous car"));
         GridController.masterQueue.enqueue(gridEventFactory(GridController.masterTime+continuousCarsTime, stopContinuousCarsCreateEventHandler(), "stops continuous car generation"));
-
-        //VERT AND HORIZONTAL LINES
-        // setUpTestCars2(20);
-        // startTestCars();
-
-        //CARAVAN ON SAME PATH
-        // setUpTestCars(1);
-        // startTestCars();
     });
     
     //next event button
@@ -145,35 +140,18 @@ function setup()
         }
     });
 
-    timeLabel = document.getElementById("timeLabel");
-    // timeLabel.style('display', 'inline');
-
-    /*
-    createDiv();
-    roadsButton = createButton('Generate Roads');
-    roadsButton.mousePressed(generateRoads);
-
-    lightsButton = createButton('Generate Lights');
-    lightsButton.mousePressed(generateLights)
-    
-    //create both (also lanes)
-    bothButton = createButton('Generate Both');
-    bothButton.mousePressed(() => {
-        generateLights(); 
-        generateRoads();
-    });
-    */
-
-    // createDiv();
+    //setup labels button
     labelsButton = document.getElementById("labelsButton");
     labelsButton.onclick = (() => {showLabels = !showLabels})
 
+    //setup reset button
     resetButton = document.getElementById("resetButton");
     resetButton.onclick = (() => {
         GridController.reset();
         // continuousCarsButton.remove();
     });
 
+    //setup continuous cars button
     continuousCarsButton = document.getElementById("carsButton");
     continuousCarsButton.onclick = (() => {
         if(continuousCars == true) {
@@ -182,23 +160,14 @@ function setup()
         }
         else {
             continuousCars = true;
+
+            //start continuous cars
             GridController.masterQueue.enqueue(gridEventFactory(GridController.masterTime, generateContinuousCarsCreateEventHandler(continuousCarsDelay), "first continuous car"));
             continuousCarsButton.innerHTML = 'Continuous Car Generation: ✓';
         }
     });
 
-    /*
-    createDiv();
-    removeRoadsButton = createButton('Remove Roads');
-    removeRoadsButton.mousePressed(removeRoads);
-
-    removeLightsButton = createButton('Remove Lights');
-    removeLightsButton.mousePressed(removeLights);
-
-    removeBothButton = createButton('Remove Both');
-    removeBothButton.mousePressed(() => {removeLights(); removeRoads();});
-    */
-
+    //Create sliders
     createDiv(`Grid Size: `);
     gridSlider = createSlider(1, 20, 10, 1);
     sliderLabel = createDiv(`${gridSlider.value()}`);
@@ -222,7 +191,7 @@ function draw()
 {
     background(51);
  
-    //updates sliders
+    //updates slider values
     if(mouseIsPressed) {
         sliderLabel.elt.innerHTML = `${gridSlider.value()}`;
         roadPercentLabel.elt.innerHTML = `${roadPercentSlider.value()}%`;
@@ -250,13 +219,7 @@ function draw()
         }
     }
 
-    //draws Roads
-    // stroke(200);
-    // for(let i = 0; i<GridController.Roads.length; i++) {
-    //     line(GridController.Roads[i].entrance.coords[0], GridController.Roads[i].entrance.coords[1], GridController.Roads[i].exit.coords[0], GridController.Roads[i].exit.coords[1]);
-    // }
-
-    let offset = 3;
+    //off
     //draws Lanes
     for(let i = 0; i<GridController.Roads.length; i++) {
 
@@ -308,7 +271,6 @@ function draw()
         }
 
         let size = 10;
-
 
         //puts on correct side of road
         if(car.lane) {

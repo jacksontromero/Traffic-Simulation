@@ -2,22 +2,50 @@
  * Interface for a masterGrid object
  */
 interface masterGrid {
+
+    /**array of all lights*/
     Lights: Light[];
+
+    /**array of all roads*/
     Roads: Road[];
+
+    /**array of all cars*/
     Cars: Car[];
 
+    /**pixels on edge of canvas*/
     buffer: number;
+
+    /**dimensions of grid*/
     gridSize: number;
+
+    /**number of pixels between each light on the grid*/
     stepSize: number;
 
+    /**masterQueue of all events*/
     masterQueue: PriorityQueue;
+
+    /**queue of all completed events*/
     completedQueue: gridEvent[];
+
+    /**current master time*/
     masterTime: number;
 
+    /**
+     * Updates the size of the grid (used if slider value changes)
+     * @param gridSize square side length
+     * @param width pixel width of canvas
+     */    
     updateSize(gridSize: number, width: number):void;
+
+    /**runs next event and returns it*/
     nextEvent():gridEvent;
+
+    /**resets the entire grid*/
     reset(): void;
 
+    /**
+     * reaction time of the cars on the grid
+    */
     reactionTime:number;
 }
 
@@ -25,7 +53,7 @@ interface masterGrid {
  * Constructs a masterGrid interface with default values and buffer
  * @param buffer pixels on edge of canvas
  */
-function masterGridFactory(buffer: number): masterGrid {
+function masterGridFactory(buffer: number, reactionT: number): masterGrid {
     return {
         Lights: [],
         Roads: [],
@@ -39,18 +67,14 @@ function masterGridFactory(buffer: number): masterGrid {
         completedQueue: [],
         masterTime: 0,
 
-        /**
-         * Updates the size of the grid (used if slider value changes)
-         * @param gridSize square side length
-         * @param width pixel width of canvas
-         */
+        
         updateSize(gridSize: number, width: number):void {
             this.gridSize = gridSize;
+
+            //calculate stepsize from buffer
             this.stepSize = (width-this.buffer*2)/(this.gridSize-1);
         },
-        /**
-         * runs the next event in the masterQueue
-         */
+
         nextEvent():gridEvent {
             //dequeue
             let eventToRun = this.masterQueue.dequeue();
@@ -65,14 +89,19 @@ function masterGridFactory(buffer: number): masterGrid {
             eventToRun.value();
             return eventToRun;
         },
+
         reset(): void {
             this.masterQueue = PriorityQueueFactory();
             this.completedQueue = [];
             this.masterTime = 0;
+
+            //stop tick that keeps running next event
             clearInterval(runInterval);
+
+            //reset pause button
             paused = undefined;
 
-            //resets cars
+            //resets cars back to their start
             for(let i = 0; i<this.Cars.length; i++) {
                 let tempCar: Car = this.Cars[i];
 
@@ -88,10 +117,9 @@ function masterGridFactory(buffer: number): masterGrid {
                 //ALLOWS CAR TO REROUTE DURING SECOND RUN
                 tempCar.reRoute = false;
 
+                //enqueue event to start the car at whenever it started in the first run
                 this.masterQueue.enqueue(gridEventFactory(tempCar.startTime, tempCar.start(), `start car ${tempCar.id}`))
             }
-
-            
 
             //resets lights and lanes
             for(let i = 0; i<this.Lights.length; i++) {
@@ -107,8 +135,10 @@ function masterGridFactory(buffer: number): masterGrid {
                 //clones originalLaneOrder to incomingLanes
                 tempLight.incomingLanes = tempLight.originalLaneOrder.map((x) => x);
 
+                //lights not smart on second run
                 tempLight.smartLogic = false;
 
+                //reset each incoming lane
                 for(let j = 0; j<tempLight.incomingLanes.length; j++) {
                     let tempLane = tempLight.incomingLanes[j];
                     tempLane.carsExiting = [];
@@ -122,10 +152,13 @@ function masterGridFactory(buffer: number): masterGrid {
             
         },
 
-        reactionTime: reactionTime
+        reactionTime: reactionT
     }
 }
 
+/**
+ * Prints how many cars were rerouted during the run
+ */
 function howManyRerouted() {
     let count = 0;
 
@@ -138,6 +171,9 @@ function howManyRerouted() {
     console.log(count);
 }
 
+/**
+ * Prints how many lights were smart during the rud
+ */
 function howManySmart() {
     let count = 0;
 
@@ -385,19 +421,26 @@ function lightDistance(start: Light, end: Light) {
     return Math.sqrt((start.coords[0] - end.coords[0])**2 + (start.coords[1] - end.coords[1])**2);
 }
 
+/**
+ * Returns the total amount of time it takes to traverse a path
+ */
 function pathTime(path: Light[]): number {
     let time = 0;
+
+    //for each path in the path
     for(let i = 1; i<path.length; i++) {
         let light1 = path[i-1];
         let light2 = path[i];
         let tempLane: Lane;
 
+        //find lane
         for(let j = 0; j<light2.incomingLanes.length; j++) {
             if(light2.incomingLanes[j].entrance == light1) {
                 tempLane = light2.incomingLanes[j];
             }
         }
 
+        //add to total
         let tempTime = tempLane.timeToTravel();
 
         time+=tempTime;
@@ -409,8 +452,9 @@ function pathTime(path: Light[]): number {
     return time;
 }
 
-//runs the grid with a specified time between events
 let runInterval;
+
+/**runs the grid with a specified time between events*/
 function runGridInterval(delay: number) {
     startLightCounters();
 
@@ -421,7 +465,7 @@ function runGridInterval(delay: number) {
     }, delay);
 }
 
-//runs the grid with a pre-specified time between events
+/**runs the grid with a pre-specified time between events*/
 function runGrid() {
     startLightCounters();
 

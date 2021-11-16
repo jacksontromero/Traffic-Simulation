@@ -44,6 +44,8 @@ function carFactory(id: number, light: Light, mpg: number, path: Light[]): Car {
         mpg: mpg,
         path: path,
         pathIndex: 0,
+
+        //CARS START NOT REROUTING, CHANGE THIS FOR FULL IMPROVEMENTS
         reRoute: false,
         /**
          * Returns a function that returns the id of the car for testing purposes

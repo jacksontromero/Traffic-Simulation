@@ -12,6 +12,7 @@ function carFactory(id, light, mpg, path) {
         mpg: mpg,
         path: path,
         pathIndex: 0,
+        //CARS START NOT REROUTING, CHANGE THIS FOR FULL IMPROVEMENTS
         reRoute: false,
         /**
          * Returns a function that returns the id of the car for testing purposes

@@ -2,7 +2,7 @@
  * Constructs a masterGrid interface with default values and buffer
  * @param buffer pixels on edge of canvas
  */
-function masterGridFactory(buffer) {
+function masterGridFactory(buffer, reactionT) {
     return {
         Lights: [],
         Roads: [],
@@ -13,18 +13,11 @@ function masterGridFactory(buffer) {
         masterQueue: PriorityQueueFactory(),
         completedQueue: [],
         masterTime: 0,
-        /**
-         * Updates the size of the grid (used if slider value changes)
-         * @param gridSize square side length
-         * @param width pixel width of canvas
-         */
         updateSize(gridSize, width) {
             this.gridSize = gridSize;
+            //calculate stepsize from buffer
             this.stepSize = (width - this.buffer * 2) / (this.gridSize - 1);
         },
-        /**
-         * runs the next event in the masterQueue
-         */
         nextEvent() {
             //dequeue
             let eventToRun = this.masterQueue.dequeue();
@@ -41,9 +34,11 @@ function masterGridFactory(buffer) {
             this.masterQueue = PriorityQueueFactory();
             this.completedQueue = [];
             this.masterTime = 0;
+            //stop tick that keeps running next event
             clearInterval(runInterval);
+            //reset pause button
             paused = undefined;
-            //resets cars
+            //resets cars back to their start
             for (let i = 0; i < this.Cars.length; i++) {
                 let tempCar = this.Cars[i];
                 tempCar.lane = undefined;
@@ -55,6 +50,7 @@ function masterGridFactory(buffer) {
                 tempCar.completed = false;
                 //ALLOWS CAR TO REROUTE DURING SECOND RUN
                 tempCar.reRoute = false;
+                //enqueue event to start the car at whenever it started in the first run
                 this.masterQueue.enqueue(gridEventFactory(tempCar.startTime, tempCar.start(), `start car ${tempCar.id}`));
             }
             //resets lights and lanes
@@ -69,7 +65,9 @@ function masterGridFactory(buffer) {
                 tempLight.startCycleTime = 0;
                 //clones originalLaneOrder to incomingLanes
                 tempLight.incomingLanes = tempLight.originalLaneOrder.map((x) => x);
+                //lights not smart on second run
                 tempLight.smartLogic = false;
+                //reset each incoming lane
                 for (let j = 0; j < tempLight.incomingLanes.length; j++) {
                     let tempLane = tempLight.incomingLanes[j];
                     tempLane.carsExiting = [];
@@ -80,9 +78,12 @@ function masterGridFactory(buffer) {
                 }
             }
         },
-        reactionTime: reactionTime
+        reactionTime: reactionT
     };
 }
+/**
+ * Prints how many cars were rerouted during the run
+ */
 function howManyRerouted() {
     let count = 0;
     for (let i = 0; i < GridController.Cars.length; i++) {
@@ -92,6 +93,9 @@ function howManyRerouted() {
     }
     console.log(count);
 }
+/**
+ * Prints how many lights were smart during the rud
+ */
 function howManySmart() {
     let count = 0;
     for (let i = 0; i < GridController.Lights.length; i++) {
@@ -291,17 +295,23 @@ function calculateDistance(x1, y1, x2, y2) {
 function lightDistance(start, end) {
     return Math.sqrt((start.coords[0] - end.coords[0]) ** 2 + (start.coords[1] - end.coords[1]) ** 2);
 }
+/**
+ * Returns the total amount of time it takes to traverse a path
+ */
 function pathTime(path) {
     let time = 0;
+    //for each path in the path
     for (let i = 1; i < path.length; i++) {
         let light1 = path[i - 1];
         let light2 = path[i];
         let tempLane;
+        //find lane
         for (let j = 0; j < light2.incomingLanes.length; j++) {
             if (light2.incomingLanes[j].entrance == light1) {
                 tempLane = light2.incomingLanes[j];
             }
         }
+        //add to total
         let tempTime = tempLane.timeToTravel();
         time += tempTime;
         //runs
@@ -309,8 +319,8 @@ function pathTime(path) {
     }
     return time;
 }
-//runs the grid with a specified time between events
 let runInterval;
+/**runs the grid with a specified time between events*/
 function runGridInterval(delay) {
     startLightCounters();
     runInterval = setInterval(() => {
@@ -319,7 +329,7 @@ function runGridInterval(delay) {
         }
     }, delay);
 }
-//runs the grid with a pre-specified time between events
+/**runs the grid with a pre-specified time between events*/
 function runGrid() {
     startLightCounters();
     runInterval = setInterval(() => {

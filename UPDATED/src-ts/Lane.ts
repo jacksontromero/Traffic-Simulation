@@ -4,20 +4,46 @@
  * Interface for a Lane object
  */
 interface Lane {
+    /**light at start of this lane */
     entrance: Light;
+
+    /**light at end of this lane */
     exit: Light;
+
+    /**Road this lane is connected to */
     parentRoad: Road;
+
+    /**length of the lane in pixels?*/
     length?: number;
+
+    /**speed limit in mph */
     speedLimit?: number;
+
+    /**queue of cars at the lane's entrance */
     entranceQueue?: Car[];
+
+    /**queue of cars at the lane's exit */
     exitQueue?: Car[];
+
+    /**queue of cars currently exiting the lane */
     carsExiting?: Car[];
+
+    /**number of all cars on the lane */
     allCars?: number;
+
+    /**whether or not the lane is currently active */
     active?: boolean;
+
+    /**direction that the lane is moving (used to calculations) */
     direction?: String;
+
+    /**whether or not the lane is short circuited to always active */
     alwaysActive: boolean;
 
+    /**calculates the amount of time it takes to traverse the lane */
     timeToTravel(): number;
+
+    /**returns the lane opposite of this one */
     getOpposite(): Lane;
 }
 

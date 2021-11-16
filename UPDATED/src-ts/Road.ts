@@ -4,9 +4,13 @@
  * Interface for a Road object
  */
 interface Road {
+    //first light (directionality not really enforced on roads)
     entrance: Light;
+    //second light
     exit: Light;
+    //length of road in miles
     length?: number;
+    //array of Lanes for this road
     lanes?: Lane[];
 }
 
@@ -76,13 +80,20 @@ function removeRoads() {
     //randomizes roads (uses p5.js shuffle function)
     GridController.Roads = shuffle(GridController.Roads);
 
+    //quota for how many roads we want to remove in order to hit desires road generation percentage
     let quota = Math.floor((1-roadPercentSlider.value()/100)*GridController.Roads.length);
+
+    //counts removed roads
     let removed = 0;
+
+    //counter is index of road currently being tried
     let counter = GridController.Roads.length-1;
 
     //while quota not met and there are still Roads left to try
     while(removed < quota && counter >= 0) {
         //removes road as a neighbor of its connected lights
+
+        //get road we *might* remove (have to test that it's able to be removed)
         let tempRoad = GridController.Roads[counter];
 
         //if the entrance and exit will have at least 1 road after removing this one
@@ -99,6 +110,8 @@ function removeRoads() {
             //runs aStar between entrance and exit of the now deleted road, finds alternate path
             if(aStar(tempRoad.entrance, tempRoad.exit, false).length > 0) {
                 GridController.Roads.splice(counter, 1);
+
+                //increase total number of roads removed
                 removed++;
             }
 
@@ -113,7 +126,7 @@ function removeRoads() {
             }
         }
 
-        //increment counter
+        //decrement counter
         counter--;
     }
 }

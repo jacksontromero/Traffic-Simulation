@@ -24,13 +24,11 @@ function lightFactory(id) {
         nextCycleEventObject: undefined,
         skipCycleAtTime: undefined,
         currentlySkipping: false,
-        /**
-         * Returns a function that initializes a Light's cycle
-         */
         startCycleCreateEventHandler() {
             return () => {
                 //clones incomingLanes to originalLaneOrder
                 this.originalLaneOrder = this.incomingLanes.map((x) => x);
+                //if less than two neighbors, short circuit to always on
                 if (this.neighbors.length <= 2) {
                     this.noLogic = true;
                     for (let i = 0; i < this.incomingLanes.length; i++) {
@@ -47,13 +45,10 @@ function lightFactory(id) {
                 }
             };
         },
-        /**
-         * Returns a function that cycles a light's active roads
-         */
         cycleCreateEventHandler() {
             return () => {
                 let time = GridController.masterTime;
-                //if(this.skipCycleAtTime) {
+                //if the current time is not the time that the light is supposed to skip
                 if (time != this.skipCycleAtTime) {
                     this.currentlySkipping = false;
                     //resets active lanes from last run
@@ -77,6 +72,7 @@ function lightFactory(id) {
                     }
                     //sets up new cycle
                     this.activeLane.active = true;
+                    //update startCycleTime to time of new cycle
                     this.startCycleTime = time;
                     //if a queue exists on the active lane
                     if (this.activeLane.exitQueue.length > 0) {
@@ -102,7 +98,6 @@ function lightFactory(id) {
                 else {
                     //DO NOTHING
                 }
-                //} 
             };
         },
         /**
@@ -114,8 +109,10 @@ function lightFactory(id) {
         nextCarMainCreateEventHandler() {
             return () => {
                 let time = GridController.masterTime;
+                /**number of cars waiting on inactive lanes*/
                 let waitingCars = 0;
                 let oppositeLane = this.activeLane.getOpposite();
+                //for each incoming lane, add to total number of waiting cars
                 for (let i = 0; i < this.incomingLanes.length; i++) {
                     let tempLane = this.incomingLanes[i];
                     if (tempLane != this.activeLane && tempLane != oppositeLane) {
@@ -125,7 +122,7 @@ function lightFactory(id) {
                 if (verbose) {
                     console.log(`${waitingCars} are waiting at ${this.id}`);
                 }
-                //if the cycle time has not elapsed & there are cars in the queue
+                //if the cycle time has not elapsed & there are cars in the active queue
                 if (time < this.startCycleTime + this.cycleTime - this.travelTime && this.activeLane.exitQueue.length > 0) {
                     let tempCar = this.activeLane.exitQueue.shift();
                     if (verbose) {
@@ -136,9 +133,9 @@ function lightFactory(id) {
                     GridController.masterQueue.enqueue(gridEventFactory(time + GridController.reactionTime + this.travelTime, tempCar.moveToLaneCreateEventHandler(), `move ${this.id}'s first car to lane`));
                     GridController.masterQueue.enqueue(gridEventFactory(time + GridController.reactionTime, this.nextCarMainCreateEventHandler(), `check ${this.id}'s next car`));
                 }
-                //yes opp lane
+                //else if there is an opposite lane
                 else if (oppositeLane) {
-                    //if the light is smart, time has not elapsed, no cars actively waiting on active lanes, and cars waiting on inactive lanes, cycle
+                    //if the light is smart, time has not elapsed, no cars actively waiting on active lane, and cars waiting on inactive lanes, cycle
                     if (this.smartLogic && time < this.startCycleTime + this.cycleTime - this.travelTime && this.activeLane.exitQueue.length == 0 && oppositeLane.exitQueue.length == 0 && waitingCars != 0 && this.currentlySkipping == false) {
                         //CYCLE NOW
                         //remove current light cycle event
@@ -149,7 +146,9 @@ function lightFactory(id) {
                         if (verbose) {
                             console.log(`SMART SKIP FROM ACTIVE LANE`);
                         }
+                        //update light to currently skipping state
                         this.currentlySkipping = true;
+                        //THIS IS KINDA SUS IDK IF THIS ENTIRE FUNCTION EVEN WORKS
                         let correction = 0;
                         if (this.travelTime + time == this.skipCycleAtTime) {
                             correction = 1;
