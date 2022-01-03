@@ -6,6 +6,7 @@ This project aimed to create a traffic grid simulation that could be tweaked so 
 
 ## Setup playground dev version
 This is a link to the most recent dev version of the website which currently has UI improvements over the older versions
+
 Click [here](https://rawcdn.githack.com/jacksontromero/Traffic-Simulation/48148cfe3c9ecdfb73ccbfeddf6edba47c22bda8/UPDATED/tsIndex.html)
 
 ## Setup testing versions
