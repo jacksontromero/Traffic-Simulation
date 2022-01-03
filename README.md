@@ -4,11 +4,11 @@ PJAS 2021 Project on Measuring Impact of Autonomous Systems on Congestion (Won B
 This project aimed to create a traffic grid simulation that could be tweaked so that cars knew each other's locations and could dynamically re-route themselves as well as testing the use of smart traffic lights that weren't stuck on a fixed cycle and could change to allow more throughput.
 
 
-##Setup playground dev version
+## Setup playground dev version
 This is a link to the most recent dev version of the website which currently has UI improvements over the older versions
 Click [here](https://rawcdn.githack.com/jacksontromero/Traffic-Simulation/48148cfe3c9ecdfb73ccbfeddf6edba47c22bda8/UPDATED/tsIndex.html)
 
-##Setup testing versions
+## Setup testing versions
 Each link below can be started with the following commands
 
 * First, press the "Setup Everything" button and then press play
